@@ -1,6 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import { 
     FormControl,
     InputLabel,
@@ -19,10 +19,10 @@ function App() {
   const [input,setInput] = useState('');
   const [messages, setMessages] = useState([]);
   const [username, setUsername] = useState('');
-
+  const dummy = useRef();
 
   useEffect(() => {
-      db.collection('messages').onSnapshot(snapshot => {
+      db.collection('messages').orderBy('timestamp').onSnapshot(snapshot => {
         setMessages(snapshot.docs.map(doc => ({id: doc.id, message: doc.data()})));
       })
   }, [])
@@ -34,16 +34,16 @@ function App() {
 
   console.log(messages);
   
-  const sendMessage = (event) => {
+  const sendMessage = async (event) => {
     event.preventDefault();
-    db.collection('messages').add({
+   await db.collection('messages').add({
       message: input,
       username: username,
       timestamp: firebase.firestore.FieldValue.serverTimestamp()
 
     });
-    
     setInput('');
+    dummy.current.scrollIntoView({behavior: "smooth"});
   }
 
   
@@ -76,7 +76,7 @@ function App() {
         </FormControl>
       </form>
       
-     <FlipMove>
+     <FlipMove className="box">
      {
       messages.map(({id, message}) => {
         
@@ -84,6 +84,7 @@ function App() {
         })
       }
      </FlipMove>
+     <span ref={dummy}></span>
     </div>
   );
 }

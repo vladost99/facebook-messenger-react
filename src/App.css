@@ -2,6 +2,10 @@
   text-align: center;
 }
 
+.box {
+margin-bottom: 120px;
+}
+
 .app__form {
   padding: 20px;
   position: fixed;
